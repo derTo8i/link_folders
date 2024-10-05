@@ -1,30 +1,40 @@
 from os import path, system, remove
 from tkinter.filedialog import askdirectory
 
-def folder(title:str | None):
+
+def get_dir_path(title:str | None):
+    """
+    Prompts the user to select a directory.
+    
+    @param title (str): The title of the directory selection dialog. Default is "Select a directory".
+    @return path (str): The path of the selected directory.
+    """
     path = askdirectory(title=title)
-    while path == "":
+    while not path: 
         askdirectory(title=title)
     return path
 
-def setup():
-    folder_original = folder("Original")
-    folder_link_parent_path = folder("Parentpath")
-    foldername = input("Input foldername: ")
+def create_folder_junction():
+    """
+    This function creates a junction link (symbolic link) between two folders. 
+    """
+    original_folder_path = get_dir_path("Original")
+    parent_folder_path = get_dir_path("Parentpath")
+    junction_folder_name = input("Input foldername of the new folder (symbolic link): ")
 
-    folder_link = path.join(folder_link_parent_path, foldername)
+    new_folder_path = path.join(parent_folder_path, junction_folder_name)
 
-    while foldername == "" or path.exists(folder_link):
-        foldername = input("file exists or foldername is not a text. Please input new name: ")
-        folder_link = path.join(folder_link_parent_path, foldername)
+    while junction_folder_name == "" or path.exists(new_folder_path):
+        junction_folder_name = input("file exists or foldername is not a text. Please input new name: ")
+        new_folder_path = path.join(parent_folder_path, junction_folder_name)
 
-    print(folder_original)
-    print(folder_link)
+    print(original_folder_path)
+    print(new_folder_path)
 
-    system("sudo mklink /J " + '"' + folder_link + '" '+ '"' + folder_original + '" ')
+    system("sudo mklink /J " + '"' + new_folder_path + '" '+ '"' + original_folder_path + '" ')
 
 
 if __name__ == "__main__":
-    setup()
+    create_folder_junction()
 
 #system("Echo off")
